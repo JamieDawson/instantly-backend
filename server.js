@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
@@ -12,7 +11,7 @@ const BASE_URL = "https://api.instantly.ai/api/v2";
 const API_KEY = process.env.INSTANTLY_API_KEY;
 const USE_MOCK = process.env.USE_MOCK === "true";
 
-// Realistic mock data with 2 campaigns (same as before)
+// Realistic mock data with 2 campaigns
 const mockData = [
   {
     campaign_name: "Outreach to SaaS Founders",
@@ -114,7 +113,7 @@ const mockData = [
   },
 ];
 
-// Health check
+// Health check. Tells if you the server is running and if you're using mock data
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, useMock: USE_MOCK });
 });
@@ -124,7 +123,7 @@ app.get("/api/analytics", async (req, res) => {
   try {
     if (USE_MOCK) return res.json(mockData);
 
-    // 1️⃣ Fetch campaigns
+    // 1) Fetch campaigns
     const campaignsRes = await axios.get(`${BASE_URL}/campaigns`, {
       headers: { Authorization: `Bearer ${API_KEY}` },
       params: { limit: 2 }, // pull first 2 campaigns
@@ -134,7 +133,7 @@ app.get("/api/analytics", async (req, res) => {
     if (!campaigns || campaigns.length === 0)
       throw new Error("No campaigns found");
 
-    // 2️⃣ For each campaign, fetch daily analytics AND overview
+    // 2️) For each campaign, fetch daily analytics AND overview
     const analyticsPromises = campaigns.map(async (campaign) => {
       // Daily analytics
       const dailyRes = await axios.get(
